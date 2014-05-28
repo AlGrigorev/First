@@ -10,6 +10,7 @@ int put_text(Dialog* D,char* str)
 	}
 	int e = 0,len=strlen(str);
 	D->stxt.h = 1;
+	D->stxt.w = 10;
 	
 	if (len > 60)
 	{
@@ -28,14 +29,14 @@ int put_text(Dialog* D,char* str)
 	D->text = (char**)malloc((D->stxt.h)*sizeof(char*));
 	if (NULL == D->text)
 	{
-		return 1;
+		return NO_MEMORY;
 	}
 	for (e = 0; e < D->stxt.h;e++)
 	{
 		D->text[e] = (char*)malloc((D->stxt.w)*sizeof(char));
 		if (NULL == D->text[e])
 		{
-			return 1;
+			return NO_MEMORY;
 		}
 	}
 	
@@ -43,10 +44,14 @@ int put_text(Dialog* D,char* str)
 	
 	do
 	{
-		if (j == D->stxt.h-1)
+		if (j > D->stxt.h-1)																//поменял было ==
 		{
 			D->stxt.h++;
 			D->text = (char**)realloc(D->text, (D->stxt.h)*sizeof(char*));
+			if (NULL == D->text)
+			{
+				return NO_MEMORY;
+			}
 			for (e; e < D->stxt.h;e++)
 			{
 				D->text[e] = (char*)malloc((D->stxt.w)*sizeof(char));
@@ -55,21 +60,25 @@ int put_text(Dialog* D,char* str)
 					return NO_MEMORY;
 				}
 			}
-			if (D->text == NULL)
+			/*if (D->text == NULL)
 			{
 				return NO_MEMORY;
-			}
+			}*/
 		}
-		int o = 1;
-		/*while (str[k + D->stxt.w - o] != ' ')
+		/*int o = 1;
+		while (str[k + D->stxt.w - o] != ' ')
 		{
 			o++;
 		}										*///чтобы разделения были по целым словам
 		for (i = 0; i < D->stxt.w - 1; i++)
 		{
-			if (str[k] == '\n' || str[k] == '\0')
+			if (str[k] == '\n' || str[k] == '\r')
 			{
 				k++;
+				break;
+			}
+			if (str[k] == '\0') 
+			{
 				break;
 			}
 			if (i >= D->stxt.w - 11 && str[k] == ' ')
@@ -372,6 +381,10 @@ void del_Dialog(Dialog *D)
 
 int get_type(char *argv[], int* type, int n)
 {
+	if (argv[n] == NULL)
+	{
+		return 0;
+	}
 	int er = 0;
 	*type = parse_number(argv[n], &er);
 
@@ -384,7 +397,11 @@ int get_type(char *argv[], int* type, int n)
 }
 int get_file(char *argv[], FILE **F, int n)
 {
-	(*F) = fopen("argv[n]", "r");
+	if (argv[n] == NULL)
+	{
+		return 0;
+	}
+	(*F) = fopen(argv[n], "r");
 	if ((*F) == NULL)
 	{
 		return ERROR;
@@ -393,6 +410,10 @@ int get_file(char *argv[], FILE **F, int n)
 }
 int get_title(char *argv[], char** T, int n)
 {
+	if (argv[n] == NULL)
+	{
+		return 0;
+	}
 	(*T) = (char*)malloc((strlen(argv[n])+1)*sizeof(char));
 	if (NULL == T)
 	{
@@ -409,6 +430,14 @@ int get_title(char *argv[], char** T, int n)
 }
 int get_but(char *argv[], button** but, int *bn, int n)
 {
+	if (argv[n] == NULL)
+	{
+		return 0;
+	}
+	if (argv[n+1] == NULL)
+	{
+		return 0;
+	}
 	*bn++;
 	if (NULL == but)
 	{
@@ -426,15 +455,16 @@ int get_but(char *argv[], button** but, int *bn, int n)
 			return NO_MEMORY;
 		}
 	}
-	(*but)[*bn - 1].text = (char*)malloc((sizebut + 1)*sizeof(char));
-	if (NULL == (*but)[*bn - 1].text)
-	{
-		return NO_MEMORY;
-	}
 	if (strlen(argv[n]) > sizebut)
 	{
 		return BUTTON_TEXT_TOO_LONG;
 	}
+	(*but)[*bn - 1].text = (char*)malloc((strlen(argv[n]) + 1)*sizeof(char));
+	if (NULL == (*but)[*bn - 1].text)
+	{
+		return NO_MEMORY;
+	}
+	
 	int i;
 	for ( i= 0; i < strlen(argv[n]); i++)
 	{
@@ -451,15 +481,25 @@ int get_but(char *argv[], button** but, int *bn, int n)
 }
 int get_text(char *argv[], char** txt, int n)
 	{
-		
-		(*txt) = (char*)malloc(strlen(argv[n]+1)*sizeof(char));
+		if (argv[n] == NULL)
+		{
+		return 0;
+		}
 		if (NULL == (*txt))
 		{
-			return NO_MEMORY;
+			(*txt) = (char*)malloc((strlen(argv[n])+1)*sizeof(char));
+			if (NULL == (*txt))
+			{
+				return NO_MEMORY;
+			}
 		}
 		else
 		{
-			(*txt) = (char*)realloc((*txt),strlen(argv[n] + 1)*sizeof(char));
+			(*txt) = (char*)realloc((*txt),(strlen(argv[n])+1)*sizeof(char));
+			if (NULL == (*txt))
+			{
+				return NO_MEMORY;
+			}
 		}
 		int k=0,i;
 		for ( i = 0; i < strlen(argv[n]); i++)
