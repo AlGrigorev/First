@@ -64,4 +64,4 @@ int add_but(Dialog* D, int retur, char* txt);
 int put_longtext(Dialog* D, FILE* f);
 int create_Dialog(Dialog *D, int t, char* T, char* txt, FILE* lt);
 void del_Dialog(Dialog *D);
-int get_arg(char* T, char* txt, FILE *F, button** but,int *num, int *type, int argc, char *argv[]);
+int get_arg(char** T, char** txt, FILE **F, button** but,int *num, int *type, int argc, char *argv[]);

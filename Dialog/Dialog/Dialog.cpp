@@ -382,18 +382,18 @@ int get_type(char *argv[], int* type, int n)
 
 	return 0;
 }
-int get_file(char *argv[], FILE *F, int n)
+int get_file(char *argv[], FILE **F, int n)
 {
-	F = fopen("argv[n]", "r");
-	if (F == NULL)
+	(*F) = fopen("argv[n]", "r");
+	if ((*F) == NULL)
 	{
 		return ERROR;
 	}
 	return 0;
 }
-int get_title(char *argv[], char* T, int n)
+int get_title(char *argv[], char** T, int n)
 {
-	T = (char*)malloc((strlen(argv[n])+1)*sizeof(char));
+	(*T) = (char*)malloc((strlen(argv[n])+1)*sizeof(char));
 	if (NULL == T)
 	{
 		return NO_MEMORY;
@@ -401,8 +401,10 @@ int get_title(char *argv[], char* T, int n)
 	int i = 0, k = 0;
 	for (i = 0; i < strlen(argv[n]); i++)
 	{
-		T[k] = argv[n][i];
+		(*T)[k] = argv[n][i];
+		k++;
 	}
+	(*T)[k] = '\0';
 	return 0;
 }
 int get_but(char *argv[], button** but, int *bn, int n)
@@ -410,7 +412,7 @@ int get_but(char *argv[], button** but, int *bn, int n)
 	*bn++;
 	if (NULL == but)
 	{
-		*but = (button*)malloc(*bn*sizeof(but));
+		(*but) = (button*)malloc(*bn*sizeof(but));
 		if (NULL == but)
 		{
 			return NO_MEMORY;
@@ -418,14 +420,14 @@ int get_but(char *argv[], button** but, int *bn, int n)
 	}
 	else
 	{
-		*but = (button*)realloc(*but, *bn*sizeof(but));
+		(*but) = (button*)realloc(*but, *bn*sizeof(but));
 		if (NULL == but)
 		{
 			return NO_MEMORY;
 		}
 	}
-	but[*bn - 1]->text = (char*)malloc((sizebut+1)*sizeof(char));
-	if (NULL == but[*bn - 1]->text)
+	(*but)[*bn - 1].text = (char*)malloc((sizebut + 1)*sizeof(char));
+	if (NULL == (*but)[*bn - 1].text)
 	{
 		return NO_MEMORY;
 	}
@@ -436,34 +438,40 @@ int get_but(char *argv[], button** but, int *bn, int n)
 	int i;
 	for ( i= 0; i < strlen(argv[n]); i++)
 	{
-		but[*bn - 1]->text[i] = argv[n][i];
+		(*but)[*bn - 1].text[i] = argv[n][i];
 	}
-	but[*bn - 1]->text[i] = '\0';
+	(*but)[*bn - 1].text[i] = '\0';
 	int e = 0;
-	but[*bn - 1]->ret = parse_number(argv[n + 1], &e);
+	(*but)[*bn - 1].ret = parse_number(argv[n + 1], &e);
 	if (e != 0)
 	{
 		return INCORECT_RET;
 	}
 	return 0;
 }
-int get_text(char *argv[], char* txt, int n)
+int get_text(char *argv[], char** txt, int n)
 	{
 		
-		txt = (char*)malloc(strlen(argv[n])*sizeof(char));
-		if (NULL == txt)
+		(*txt) = (char*)malloc(strlen(argv[n]+1)*sizeof(char));
+		if (NULL == (*txt))
 		{
 			return NO_MEMORY;
 		}
-
-		for (int i = 0; i < strlen(argv[n]); i++)
+		else
 		{
-			txt[i] = argv[n][i];
+			(*txt) = (char*)realloc((*txt),strlen(argv[n] + 1)*sizeof(char));
 		}
+		int k=0,i;
+		for ( i = 0; i < strlen(argv[n]); i++)
+		{
+			(*txt)[k] = argv[n][i];
+			k++;
+		}
+		(*txt)[k] = '\0';
 		return 0;
 	}
 // C:\Users\Alexei>dialog.exe -text "he  llo" -longtext a.txt -button "OK" 0 -button "Cancel" 1 -title "title" 
-int get_arg(char* T, char* txt, FILE *F, button** but, int *bn, int *type, int argc, char *argv[])
+int get_arg(char** T, char** txt, FILE **F, button** but, int *bn, int *type, int argc, char *argv[])
 {
 	int i = 1;
 	int er;
@@ -520,8 +528,7 @@ int get_arg(char* T, char* txt, FILE *F, button** but, int *bn, int *type, int a
 									
 			}
 			if (string_key(argv[i], "-button"))
-			{
-	
+			{	
 				i++;
 				if (i > argc)break;
 				er = get_but(argv, but,bn, i);

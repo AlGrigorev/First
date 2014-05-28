@@ -225,7 +225,7 @@ void draw_string(Dialog* D, int y)
 	if (ws.h > 50)return ;
 	int max_x, x,max_y;
 	con_getMaxXY(&max_x,&max_y);
-	for (x = (max_x - ws.w) / 2 + 1; x <= (max_x + ws.w) / 2 - 1; x++)
+	for (x = (max_x - ws.w) / 2 + 2; x <= (max_x + ws.w) / 2 - 2; x++)
 	{
 		con_setColor(11);
 		con_gotoXY(x, y);
@@ -237,7 +237,7 @@ int print_string(Dialog* D, int y, int key)
 
 	if (NULL == D->string.s)
 	{
-		D->string.s = (char*)malloc(sizestring*(sizeof(char)));
+		D->string.s = (char*)malloc((sizestring+1)*(sizeof(char)));
 		if (NULL == D->string.s)
 		{
 			return NO_MEMORY;
@@ -248,7 +248,7 @@ int print_string(Dialog* D, int y, int key)
 	if (ws.h > 50)return ERROR;
 	int max_x, max_y, x;
 	con_getMaxXY(&max_x, &max_y);
-	x = (max_x - ws.w) / 2 + 2;
+	x = (max_x - ws.w) / 2 + 3;
 	if (key != CON_KEY_BACKSPACE)
 	{
 		if (D->string.cursor < sizestring)
