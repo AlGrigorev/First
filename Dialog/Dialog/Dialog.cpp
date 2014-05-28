@@ -193,7 +193,7 @@ int add_but(Dialog* D, int retur, char* txt)
 	{
 		return INCORECT_RET;
 	}
-	if (0 == D->numb)
+	if (NULL==D->but)
 	{
 		D->but = (button*)malloc((D->numb + 1)*sizeof(button));
 	}
@@ -216,7 +216,7 @@ int add_but(Dialog* D, int retur, char* txt)
 	{
 		return BUTTON_TEXT_TOO_LONG;								// слишком длинный текст кнопки
 	}
-	D->but[D->numb].text= (char*)malloc(len*sizeof(char));
+	D->but[D->numb].text= (char*)malloc((len+1)*sizeof(char));
 	if (NULL == D->but[D->numb].text)
 	{
 		return NO_MEMORY;
@@ -321,6 +321,10 @@ void del_Dialog(Dialog *D)
 {
 	if (NULL != D->but)
 	{
+		for (int i = 0; i < D->numb; i++)
+		{
+			free(D->but[i].text);
+		}
 		free(D->but);
 	}
 	
@@ -389,7 +393,7 @@ int get_file(char *argv[], FILE *F, int n)
 }
 int get_title(char *argv[], char* T, int n)
 {
-	T = (char*)malloc(strlen(argv[n])*sizeof(char));
+	T = (char*)malloc((strlen(argv[n])+1)*sizeof(char));
 	if (NULL == T)
 	{
 		return NO_MEMORY;
@@ -401,12 +405,12 @@ int get_title(char *argv[], char* T, int n)
 	}
 	return 0;
 }
-int get_but(char *argv[], button* but, int *bn, int n)
+int get_but(char *argv[], button** but, int *bn, int n)
 {
 	*bn++;
 	if (NULL == but)
 	{
-		but = (button*)malloc(*bn*sizeof(but));
+		*but = (button*)malloc(*bn*sizeof(but));
 		if (NULL == but)
 		{
 			return NO_MEMORY;
@@ -414,14 +418,14 @@ int get_but(char *argv[], button* but, int *bn, int n)
 	}
 	else
 	{
-		but = (button*)realloc(but, *bn*sizeof(but));
+		*but = (button*)realloc(*but, *bn*sizeof(but));
 		if (NULL == but)
 		{
 			return NO_MEMORY;
 		}
 	}
-	but[*bn - 1].text = (char*)malloc(sizebut*sizeof(char));
-	if (NULL == but[*bn - 1].text)
+	but[*bn - 1]->text = (char*)malloc((sizebut+1)*sizeof(char));
+	if (NULL == but[*bn - 1]->text)
 	{
 		return NO_MEMORY;
 	}
@@ -429,12 +433,14 @@ int get_but(char *argv[], button* but, int *bn, int n)
 	{
 		return BUTTON_TEXT_TOO_LONG;
 	}
-	for (int i = 0; i < strlen(argv[n]); i++)
+	int i;
+	for ( i= 0; i < strlen(argv[n]); i++)
 	{
-		but[*bn - 1].text[i] = argv[n][i];
+		but[*bn - 1]->text[i] = argv[n][i];
 	}
+	but[*bn - 1]->text[i] = '\0';
 	int e = 0;
-	but[*bn - 1].ret = parse_number(argv[n + 1], &e);
+	but[*bn - 1]->ret = parse_number(argv[n + 1], &e);
 	if (e != 0)
 	{
 		return INCORECT_RET;
@@ -457,16 +463,21 @@ int get_text(char *argv[], char* txt, int n)
 		return 0;
 	}
 // C:\Users\Alexei>dialog.exe -text "he  llo" -longtext a.txt -button "OK" 0 -button "Cancel" 1 -title "title" 
-int get_arg(char* T, char* txt, FILE *F, button* but, int *bn, int *type, int argc, char *argv[])
+int get_arg(char* T, char* txt, FILE *F, button** but, int *bn, int *type, int argc, char *argv[])
 {
 	int i = 1;
 	int er;
 	while (i < argc)
 	{
-		if ((strcmp(argv[i], "-text") == 0) || (strcmp(argv[i], "-longtext") == 0) || (strcmp(argv[i], "-button") == 0) || (strcmp(argv[i], "-type") == 0) || (strcmp(argv[i], "-title") == 0))
+		if (NULL == argv[i])
+		{
+			i++;
+			continue;
+		}
+		if ((string_key(argv[i], "-text")) || (string_key(argv[i], "-longtext")) || (string_key(argv[i], "-button") ) || (string_key(argv[i], "-type")) || (string_key(argv[i], "-title")))
 		{
 		
-			if (strcmp(argv[i], "-type") == 0)
+			if (string_key(argv[i], "-type"))
 			{
 				i++;
 				if (i > argc)break;
@@ -481,7 +492,7 @@ int get_arg(char* T, char* txt, FILE *F, button* but, int *bn, int *type, int ar
 				if (i > argc)break;
 			}
 
-			if (strcmp(argv[i], "-longtext") == 0)
+			if (string_key(argv[i], "-longtext"))
 			{
 				i++;
 				if (i > argc)break;
@@ -495,7 +506,7 @@ int get_arg(char* T, char* txt, FILE *F, button* but, int *bn, int *type, int ar
 				if (i > argc)break;
 			
 			}
-			if (strcmp(argv[i], "-title") == 0)
+			if (string_key(argv[i], "-title"))
 			{
 				i++;
 				if (i > argc)break;
@@ -508,7 +519,7 @@ int get_arg(char* T, char* txt, FILE *F, button* but, int *bn, int *type, int ar
 				if (i > argc)break;
 									
 			}
-			if (strcmp(argv[i], "-button") == 0)
+			if (string_key(argv[i], "-button"))
 			{
 	
 				i++;
@@ -522,7 +533,7 @@ int get_arg(char* T, char* txt, FILE *F, button* but, int *bn, int *type, int ar
 				if (i > argc)break;
 				
 			}
-			if (strcmp(argv[i], "-text") == 0)
+			if (string_key(argv[i], "-text"))
 			{
 				i++;
 				if (i > argc)break;

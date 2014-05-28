@@ -313,6 +313,11 @@ int do_Dialog(Dialog* D)
 	{
 		return ERROR;
 	}
+	if (D->but == NULL && D->text == NULL && D->longtext == NULL && D->title == NULL && D->type != 1)
+	{
+		return 0;
+	}
+	con_clearScr();
 	int key;
 	int y_t, y_lt, y_s, y_b,u,o=0;
 	Draw_window(D);
@@ -373,6 +378,11 @@ int do_Dialog(Dialog* D)
 		}
 		if (key == CON_KEY_ENTER)
 		{
+			if (D->numb == 0)
+			{
+				con_clearScr();
+				return EXIT;
+			}
 			con_clearScr();
 			return D->but[D->nbut - 1].ret;
 		}

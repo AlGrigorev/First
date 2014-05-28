@@ -91,3 +91,25 @@ int file_size(FILE *f)
 	rewind(f);
 	return n;
 }
+
+int string_key(char* T1, char* T2)
+{
+	if (T1 == NULL || T2 == NULL)
+	{
+		return 0;
+	}
+	int i, len1 = strlen(T1), len2 = strlen(T2);
+	if (len1 != len2)
+	{
+		return 0;
+	}
+	for (i = 0; i < len1; i++)
+	{
+		if (T1[i] != T2[i])
+		{
+			return 0;
+		}
+	}
+
+	return 1;
+}
