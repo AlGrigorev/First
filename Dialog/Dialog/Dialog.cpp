@@ -44,7 +44,7 @@ int put_text(Dialog* D,char* str)
 	
 	do
 	{
-		if (j > D->stxt.h-1)																//поменял было ==
+		if (j > D->stxt.h-1)																
 		{
 			D->stxt.h++;
 			D->text = (char**)realloc(D->text, (D->stxt.h)*sizeof(char*));
@@ -212,18 +212,17 @@ int add_but(Dialog* D, int retur, char* txt)
 	}
 	if (NULL == D->but)
 	{
-		return NO_MEMORY;								//если возращает 1 то не хватило места
+		return NO_MEMORY;								
 	}
 	//for (int t = 0; t < D->numb; t++)
 	//{
-	//	if (D->but[D->numb].ret == reture) return 5; // возращаемое значение уже существует
+	//	if (D->but[D->numb].ret == reture) return INCORECT_RET; // возращаемое значение уже существует
 	//}
 	D->but[D->numb].ret = retur;
-	//D->but[D->numb].text= txt;   // или посимвольно?
 	int len = strlen(txt);
 	if (sizebut < len)
 	{
-		return BUTTON_TEXT_TOO_LONG;								// слишком длинный текст кнопки
+		return BUTTON_TEXT_TOO_LONG;							
 	}
 	D->but[D->numb].text= (char*)malloc((len+1)*sizeof(char));
 	if (NULL == D->but[D->numb].text)
@@ -253,7 +252,7 @@ int correct_text(Dialog* D)
 	{
 		if (NULL == D->longtext)
 		{
-			D->slong.h = D->stxt.h-1;
+			D->slong.h = D->stxt.h;	//-1 
 			D->slong.w = D->stxt.w;
 			D->stxt.h = 0;
 			D->stxt.w = 0;
@@ -273,9 +272,13 @@ int correct_text(Dialog* D)
 				{
 					D->longtext[i][j] = D->text[i][j];
 				}
-				free(D->text[i]);
 			}
-			free(D->text);
+			for (int i = 0; i < D->stxt.h; i++)
+			{
+				free(D->text[i]);
+				
+			}
+
 		}
 		else if (NULL != D->longtext)
 		{
@@ -459,18 +462,29 @@ int get_but(char *argv[], button** but, int *bn, int n)
 	{
 		return BUTTON_TEXT_TOO_LONG;
 	}
-	(*but)[*bn - 1].text = (char*)malloc((strlen(argv[n]) + 1)*sizeof(char));
 	if (NULL == (*but)[*bn - 1].text)
 	{
-		return NO_MEMORY;
+		(*but)[*bn - 1].text = (char*)malloc((strlen(argv[n]) + 1)*sizeof(char));
+		if (NULL == (*but)[*bn - 1].text)
+		{
+			return NO_MEMORY;
+		}
 	}
-	
-	int i;
+	else
+	{
+		(*but)[*bn - 1].text = (char*)realloc((*but)[*bn - 1].text, (strlen(argv[n]) + 1)*sizeof(char));
+		if (NULL == (*but)[*bn - 1].text)
+		{
+			return NO_MEMORY;
+		}
+	}
+	int i,k=0;
 	for ( i= 0; i < strlen(argv[n]); i++)
 	{
-		(*but)[*bn - 1].text[i] = argv[n][i];
+		(*but)[*bn - 1].text[k] = argv[n][i];
+		k++;
 	}
-	(*but)[*bn - 1].text[i] = '\0';
+	(*but)[*bn - 1].text[k] = '\0';
 	int e = 0;
 	(*but)[*bn - 1].ret = parse_number(argv[n + 1], &e);
 	if (e != 0)
@@ -510,7 +524,6 @@ int get_text(char *argv[], char** txt, int n)
 		(*txt)[k] = '\0';
 		return 0;
 	}
-// C:\Users\Alexei>dialog.exe -text "he  llo" -longtext a.txt -button "OK" 0 -button "Cancel" 1 -title "title" 
 int get_arg(char** T, char** txt, FILE **F, button** but, int *bn, int *type, int argc, char *argv[])
 {
 	int i = 1;
