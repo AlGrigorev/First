@@ -232,11 +232,11 @@ void draw_string(Dialog* D, int y)
 }
 int print_string(Dialog* D, int y, int key)
 {
-	int n = 1,i=0,k=0;
-	
+	int n = 1, i = 0, k = 0;
+
 	if (NULL == D->string.s)
 	{
-		D->string.s = (char*)malloc((sizestring+1)*(sizeof(char)));
+		D->string.s = (char*)malloc((sizestring + 1)*(sizeof(char)));
 		if (NULL == D->string.s)
 		{
 			return NO_MEMORY;
@@ -248,36 +248,36 @@ int print_string(Dialog* D, int y, int key)
 	int max_x, max_y, x;
 	con_getMaxXY(&max_x, &max_y);
 	x = (max_x - ws.w) / 2 + 3;
-	if (key!=CON_KEY_BACKSPACE)
-	{	
+	if (key != CON_KEY_BACKSPACE)
+	{
 		if (D->string.cursor > sizestring)
 		{
 			n = (D->string.cursor / sizestring) + 1;
 		}
-		 if (D->string.cursor >= n*sizestring-1)
+		if (D->string.cursor >= n*sizestring - 1)
 		{
 			n++;
-			D->string.s = (char*)realloc(D->string.s, (n*sizestring+10 )*(sizeof(char)));
+			D->string.s = (char*)realloc(D->string.s, (n*sizestring + 10)*(sizeof(char)));
 		}
-		 D->string.s[D->string.cursor] = key;
-		 D->string.cursor++;
-		 D->string.s[D->string.cursor] = '\0';
-		 if (D->string.cursor - sizestring > 0)
-		 {
-			 i = D->string.cursor - sizestring;
-		 }
-		 else
-		 {
-			 i = 0;
-		 }
-		 k = 0;
-		 for (i; i<D->string.cursor; i++)
-		 {
-			 con_setColor(11);
-			 con_gotoXY(x + k, y);
-			 con_outTxt("%c", D->string.s[i]);
-			 k++;
-		 }
+		D->string.s[D->string.cursor] = key;
+		D->string.cursor++;
+		D->string.s[D->string.cursor] = '\0';
+		if (D->string.cursor - sizestring > 0)
+		{
+			i = D->string.cursor - sizestring;
+		}
+		else
+		{
+			i = 0;
+		}
+		k = 0;
+		for (i; i < D->string.cursor; i++)
+		{
+			con_setColor(11);
+			con_gotoXY(x + k, y);
+			con_outTxt("%c", D->string.s[i]);
+			k++;
+		}
 	}
 	else
 	{
@@ -286,37 +286,42 @@ int print_string(Dialog* D, int y, int key)
 			n--;
 			if (n>0)
 			{
-				D->string.s = (char*)realloc(D->string.s, (n*sizestring+1)*(sizeof(char)));
+				D->string.s = (char*)realloc(D->string.s, (n*sizestring + 1)*(sizeof(char)));
 			}
 			if (n < 1)
 			{
 				n = 1;
 			}
 		}
-			if (D->string.cursor>0)
+		if (D->string.cursor>0)
+		{
+			D->string.cursor--;
+			D->string.s[D->string.cursor] = '\0';
+			if (D->string.cursor - sizestring > 0)
 			{
-				D->string.cursor--;
-				D->string.s[D->string.cursor] = '\0';
-				if (D->string.cursor - sizestring > 0)
-				{
-					i = D->string.cursor - sizestring;
-				}
-				else
-				{
-					i = 0;
-					draw_string(D, y);
-				}
-				k = 0;
-				for (i; i < D->string.cursor; i++)
-				{
-					con_setColor(11);
-					con_gotoXY(x + k, y);
-					con_outTxt("%c", D->string.s[i]);
-					k++;
+				i = D->string.cursor - sizestring;
+			}
+			else
+			{
+				i = 0;
 
-				}
+			}
+			k = 0;
+			for (i; i < D->string.cursor; i++)
+			{
+				con_setColor(11);
+				con_gotoXY(x + k, y);
+				con_outTxt("%c", D->string.s[i]);
+				k++;
+			}
+			if (D->string.cursor < sizestring)
+			{
+				con_setColor(11);
+				con_gotoXY(x + D->string.cursor, y);
+				con_outTxt(" ");
 			}
 		}
+	}
 
 	return 0;
 }
