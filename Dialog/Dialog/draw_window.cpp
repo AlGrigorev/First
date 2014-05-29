@@ -13,10 +13,6 @@ void get_size_window(Dialog* D, winsize* ws)
 			ws->w = D->stxt.w + 4;
 		}
 
-		if (NULL != D->longtext)
-		{
-			ws->w = sizestring + 4;
-		}
 		for (int ij = 0; ij < D->stxt.h;ij++)
 		{
 			if (D->text[ij] != NULL)
@@ -28,6 +24,8 @@ void get_size_window(Dialog* D, winsize* ws)
 	if (NULL != D->longtext)
 	{
 		ws->h += LONG_SIZE_h+2;
+		ws->w = sizestring + 4;
+		
 	}
 	ws->h += D->numb;
 	if (D->type == 1)
@@ -416,9 +414,9 @@ void put_string(Dialog *D)
 	out = fopen("out.txt", "w");
 	if (NULL == out) return;
 	fputs(D->string.s, out);
+	fclose(out);
 	/*for (int i = 0; i < D->string.cursor; i++)
 	{
 		fputc(D->string.s[i], out);
 	}*/
-
 }

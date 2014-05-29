@@ -254,8 +254,7 @@ int correct_text(Dialog* D)
 		{
 			D->slong.h = D->stxt.h;	//-1 
 			D->slong.w = D->stxt.w;
-			D->stxt.h = 0;
-			D->stxt.w = 0;
+			
 			D->longtext = (char**)malloc(D->slong.h*sizeof(char*));
 			if (NULL == D->longtext)
 			{
@@ -278,7 +277,8 @@ int correct_text(Dialog* D)
 				free(D->text[i]);
 				
 			}
-
+			D->stxt.h = 0;
+			D->stxt.w = 0;
 		}
 		else if (NULL != D->longtext)
 		{
@@ -441,23 +441,24 @@ int get_but(char *argv[], button** but, int *bn, int n)
 	{
 		return 0;
 	}
-	*bn++;
-	if (NULL == but)
+	(*bn)++;
+	if (NULL == *but)
 	{
-		(*but) = (button*)malloc(*bn*sizeof(but));
-		if (NULL == but)
+		(*but) = (button*)malloc((*bn)*sizeof(button));
+		if (NULL == *but)
 		{
 			return NO_MEMORY;
 		}
 	}
 	else
 	{
-		(*but) = (button*)realloc(*but, *bn*sizeof(but));
-		if (NULL == but)
+		(*but) = (button*)realloc((*but), (*bn)*sizeof(button));
+		if (NULL == (*but))
 		{
 			return NO_MEMORY;
 		}
 	}
+	(*but)[*bn - 1].text = NULL;
 	if (strlen(argv[n]) > sizebut)
 	{
 		return BUTTON_TEXT_TOO_LONG;
