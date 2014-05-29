@@ -45,9 +45,9 @@ void Draw_window(Dialog* D)
 		if (ws.h > 50)return;
 		con_init();
 		con_hideCursor();
-		con_initPair(7, CON_COLOR_BLUE, CON_COLOR_WHITE);//окно
-		con_initPair(9, CON_COLOR_BLACK, CON_COLOR_WHITE);//кнопки
-		con_initPair(11, CON_COLOR_WHITE, CON_COLOR_BLUE);//строка
+		con_initPair(7, CON_COLOR_BLUE, CON_COLOR_WHITE);	//окно
+		con_initPair(9, CON_COLOR_BLACK, CON_COLOR_WHITE);	//кнопки
+		con_initPair(11, CON_COLOR_WHITE, CON_COLOR_BLUE);	//строка
 		con_getMaxXY(&max_x, &max_y);
 		while (max_x < ws.w || max_y < ws.h)
 		{
@@ -148,7 +148,7 @@ int draw_text(Dialog* D, int y_s)
 	{
 		int i;
 		x = (max_x - ws.w) / 2 + 2;
-		for (i = 0; i < D->stxt.h - 1; i++)
+		for (i = 0; i < D->stxt.h; i++)		
 		{
 			if (D->text[i] == NULL)
 			{
