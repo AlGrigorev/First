@@ -5,12 +5,14 @@
 #include <conio.h>
 #include <ctype.h>
 #include <string.h>
+#include <locale.h>
 
 #define size 100
-void retmas(int a[], int siz)   //переворачивает масив
+void retarr(int a[], int siz)   //переворачивает масив
 {
 	int i, hold;
-	for (i = 0; i < (siz / 2); i++){
+	for (i = 0; i < (siz / 2); i++)
+	{
 		hold = a[i];
 		a[i] = a[siz - 1 - i];
 		a[siz - 1 - i] = hold;
@@ -19,7 +21,7 @@ void retmas(int a[], int siz)   //переворачивает масив
 
 int polynom(int x, int a[], int n) 
 {
-	int i, j;
+	int  j;
 	float X = x;
 	int s = 0;
 	for (j = 0; j <= n; j++){
@@ -62,20 +64,21 @@ int parse_number(char *string,int *er)
 		if (isdigit(string[i]))
 		{
 			n = string[i] - '0';
-		}
-		if (n >= 10 || n < 0) 
-		{
-			*er = 1;
-			break;
-		}
-		else 
-		{
-			a[j] = n;
-			step++;
-			j++;
+
+			if (n >= 10 || n < 0)
+			{
+				*er = 1;
+				break;
+			}
+			else
+			{
+				a[j] = n;
+				step++;
+				j++;
+			}
 		}
 	}
-	retmas(a, step);
+	retarr(a, step);
 	c = sign*polynom(10, a, (step - 1));
 	return c;
 }
@@ -112,4 +115,21 @@ int string_key(char* T1, char* T2)
 	}
 
 	return 1;
+}
+
+void print_instr()
+{
+	setlocale(LC_ALL, "Russian");
+	FILE *F;
+	char c;
+	F = fopen("instruction.txt", "r");
+	if (NULL == F)
+	{
+		return;
+	}
+	while ((c = fgetc(F) != EOF))
+	{
+		printf("%c", c);
+	}
+
 }

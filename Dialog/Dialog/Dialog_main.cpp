@@ -2,7 +2,11 @@
 
 void main(int argc, char *argv[])
 {
-
+	if (argc == 1)
+	{
+		print_instr();
+		return;
+	}
 	Dialog D;
 	button * but = NULL;
 	char* txt =NULL;
@@ -20,8 +24,10 @@ void main(int argc, char *argv[])
 		printf("1-%d",er);
 		return;
 	}
-	
+
+
 	int A = create_Dialog(&D, type, T, txt, F);
+	
 	if (A != 0)
 	{
 		printf("2-%d",A);
@@ -48,6 +54,7 @@ void main(int argc, char *argv[])
 		}
 	}
 	ret = do_Dialog(&D);
+	printf("%d", ret);
 	if (ret == 1)
 	{
 		put_string(&D);
